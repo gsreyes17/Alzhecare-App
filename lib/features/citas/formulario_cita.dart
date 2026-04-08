@@ -54,6 +54,7 @@ class _FormularioCitaState extends State<FormularioCita> {
     // Obtener el pacienteId del AuthProvider si no está predeterminado
     if (_pacienteId == null && widget.cita == null) {
       Future.microtask(() {
+        if (!mounted) return;
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (authProvider.pacienteId != null) {
           setState(() {
@@ -66,6 +67,7 @@ class _FormularioCitaState extends State<FormularioCita> {
 
   void _cargarMedicos() {
     Future.microtask(() {
+      if (!mounted) return;
       Provider.of<CitasProvider>(context, listen: false).cargarMedicos();
     });
   }
@@ -116,19 +118,11 @@ class _FormularioCitaState extends State<FormularioCita> {
   }
 
   Future<void> _guardarCita() async {
-    print('🔍 DEBUG: Iniciando _guardarCita');
-    print('🔍 DEBUG: _pacienteId = $_pacienteId');
-    print('🔍 DEBUG: _medicoId = $_medicoId');
-    print('🔍 DEBUG: _fechaSeleccionada = $_fechaSeleccionada');
-    print('🔍 DEBUG: _horaSeleccionada = $_horaSeleccionada');
-
     if (!_formKey.currentState!.validate()) {
-      print('❌ DEBUG: Formulario no válido');
       return;
     }
 
     if (_pacienteId == null) {
-      print('❌ DEBUG: _pacienteId es null');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Error: No se pudo obtener el ID del paciente. Por favor, cierre sesión y vuelva a entrar.'),
@@ -140,7 +134,6 @@ class _FormularioCitaState extends State<FormularioCita> {
     }
 
     if (_medicoId == null) {
-      print('❌ DEBUG: _medicoId es null');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor selecciona un médico')),
       );
@@ -148,7 +141,6 @@ class _FormularioCitaState extends State<FormularioCita> {
     }
 
     if (_fechaSeleccionada == null || _horaSeleccionada == null) {
-      print('❌ DEBUG: Fecha u hora no seleccionada');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Por favor selecciona fecha y hora')),
@@ -184,20 +176,7 @@ class _FormularioCitaState extends State<FormularioCita> {
             : _notasController.text.trim(),
       );
 
-      print('✅ DEBUG: CitaRequest creado:');
-      print('   - pacienteId: ${citaRequest.pacienteId}');
-      print('   - medicoId: ${citaRequest.medicoId}');
-      print('   - fechaHora: ${citaRequest.fechaHora}');
-      print('   - motivo: ${citaRequest.motivo}');
-
-      print('📤 DEBUG: Enviando solicitud al backend...');
       final resultado = await provider.crearCita(citaRequest);
-      print('📥 DEBUG: Respuesta recibida: ${resultado != null ? "Éxito" : "Falló"}');
-      if (resultado != null) {
-        print('   - Cita ID: ${resultado.id}');
-      } else {
-        print('   - Error: ${provider.errorMessage}');
-      }
       exito = resultado != null;
     } else {
       // Actualizar cita existente
@@ -275,7 +254,7 @@ class _FormularioCitaState extends State<FormularioCita> {
                         ),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<int>(
-                          value: _medicoId,
+                          initialValue: _medicoId,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Selecciona un médico',

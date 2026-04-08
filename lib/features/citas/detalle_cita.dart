@@ -23,12 +23,13 @@ class _DetalleCitaState extends State<DetalleCita> {
 
   void _cargarCita() {
     Future.microtask(() {
+      if (!mounted) return;
       Provider.of<CitasProvider>(context, listen: false)
           .obtenerCita(widget.citaId);
     });
   }
 
-  Future<void> _cambiarEstado(BuildContext context, CitaModel cita) async {
+  Future<void> _cambiarEstado(CitaModel cita) async {
     final estados = ['programada', 'completada', 'cancelada', 'reprogramada'];
     final estadosFormateados = {
       'programada': 'Programada',
@@ -57,7 +58,8 @@ class _DetalleCitaState extends State<DetalleCita> {
         ),
       ),
     );
-
+    
+    if (!mounted) return;
     if (estadoSeleccionado != null && estadoSeleccionado != cita.estado) {
       final motivoController = TextEditingController();
       final confirmar = await showDialog<bool>(
@@ -92,8 +94,8 @@ class _DetalleCitaState extends State<DetalleCita> {
           ],
         ),
       );
-
-      if (confirmar == true) {
+      if (!mounted) return;
+      if (confirmar == true) {        
         final provider = Provider.of<CitasProvider>(context, listen: false);
         final exito = await provider.cambiarEstadoCita(
           cita.id,
@@ -106,7 +108,6 @@ class _DetalleCitaState extends State<DetalleCita> {
         );
 
         if (!mounted) return;
-
         if (exito) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -127,7 +128,7 @@ class _DetalleCitaState extends State<DetalleCita> {
     }
   }
 
-  Future<void> _eliminarCita(BuildContext context, CitaModel cita) async {
+  Future<void> _eliminarCita(CitaModel cita) async {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -150,6 +151,7 @@ class _DetalleCitaState extends State<DetalleCita> {
       ),
     );
 
+    if (!mounted) return;
     if (confirmar == true) {
       final provider = Provider.of<CitasProvider>(context, listen: false);
       final exito = await provider.eliminarCita(cita.id);
@@ -429,7 +431,7 @@ class _DetalleCitaState extends State<DetalleCita> {
                           // Cambiar estado
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () => _cambiarEstado(context, cita),
+                              onPressed: () => _cambiarEstado(cita),
                               icon: const Icon(Icons.swap_horiz),
                               label: const Text('Estado'),
                               style: ElevatedButton.styleFrom(
@@ -447,7 +449,7 @@ class _DetalleCitaState extends State<DetalleCita> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            onPressed: () => _eliminarCita(context, cita),
+                            onPressed: () => _eliminarCita(cita),
                             icon: const Icon(Icons.delete),
                             label: const Text('Eliminar Cita'),
                             style: ElevatedButton.styleFrom(

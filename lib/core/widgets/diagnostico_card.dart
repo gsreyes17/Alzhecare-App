@@ -46,7 +46,7 @@ class DiagnosticoCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: _getColorByResult(
                     diagnostico.resultado,
-                  ).withOpacity(0.1),
+                  ).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

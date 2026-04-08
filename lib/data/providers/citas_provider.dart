@@ -65,13 +65,11 @@ class CitasProvider with ChangeNotifier {
         _citas = (data['citas'] as List)
             .map((cita) => CitaModel.fromJson(cita))
             .toList();
-        print('Citas cargadas: ${_citas.length} de $_total');
       } else {
         throw Exception('Error cargando citas: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error al cargar citas: $e';
-      print('Error en cargarCitas: $e');
       _citas = [];
     } finally {
       _isLoading = false;
@@ -94,13 +92,11 @@ class CitasProvider with ChangeNotifier {
         _medicos = (data as List)
             .map((medico) => MedicoModel.fromJson(medico))
             .toList();
-        print('Médicos cargados: ${_medicos.length}');
       } else {
         throw Exception('Error cargando médicos: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error al cargar médicos: $e';
-      print('Error en cargarMedicos: $e');
       _medicos = [];
     }
   }
@@ -124,7 +120,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al crear cita: $e';
-      print('Error en crearCita: $e');
       return null;
     } finally {
       _isLoading = false;
@@ -149,7 +144,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al obtener cita: $e';
-      print('Error en obtenerCita: $e');
       return null;
     } finally {
       _isLoading = false;
@@ -177,7 +171,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al actualizar cita: $e';
-      print('Error en actualizarCita: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -208,7 +201,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al cambiar estado: $e';
-      print('Error en cambiarEstadoCita: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -234,7 +226,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al eliminar cita: $e';
-      print('Error en eliminarCita: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -265,7 +256,6 @@ class CitasProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _disponibilidad = DisponibilidadResponse.fromJson(data);
-        print('Disponibilidad cargada para médico $medicoId');
       } else {
         throw Exception(
           'Error verificando disponibilidad: ${response.statusCode}',
@@ -273,7 +263,6 @@ class CitasProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error al verificar disponibilidad: $e';
-      print('Error en verificarDisponibilidad: $e');
       _disponibilidad = null;
     } finally {
       _isLoading = false;

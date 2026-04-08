@@ -1,6 +1,3 @@
-/// Modelos para el Dashboard del Admin
-/// Estos modelos corresponden a los endpoints del backend de /api/dashboard
-
 class EstadisticasGenerales {
   final int totalPacientesActivos;
   final int totalMedicosActivos;

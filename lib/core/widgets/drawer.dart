@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/providers/auth_provider.dart';
-import '../../features/auth/login_auth.dart';
+import '../../features/global/login_auth.dart';
 import '../../features/admin/gestion_citas_admin.dart';
-import '../../features/paciente/historial_diagnosticos.dart';
-import '../../features/paciente/subir_imagen.dart';
-import '../../features/paciente/dashboard_paciente.dart';
-import '../../features/doctor/dashboard_doctor.dart';
-import '../../features/admin/dashboard_admin.dart';
+import '../../features/admin/gestion_usuarios_admin.dart';
+import '../../features/diagnostico/historial_diagnosticos.dart';
+import '../../features/diagnostico/subir_imagen.dart';
+import '../../features/dashboards/dashboard_paciente.dart';
+import '../../features/dashboards/dashboard_doctor.dart';
+import '../../features/dashboards/dashboard_admin.dart';
 import 'settings.dart';
 
-class MainDrawer extends StatelessWidget {
+class AppDrawer extends StatelessWidget {
   final String currentRole;
   final String currentUserName;
+  final String? selectedSectionId;
+  final ValueChanged<String>? onSectionSelected;
 
-  const MainDrawer({
+  const AppDrawer({
     super.key,
     required this.currentRole,
     required this.currentUserName,
+    this.selectedSectionId,
+    this.onSectionSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final profileImageUrl = authProvider.currentUser?.profileImageUrl;
+    final isPatient = currentRole == 'patient';
+    final isDoctor = currentRole == 'doctor';
+    final isAdmin = currentRole == 'admin';
 
     return Drawer(
       child: ListView(
@@ -64,78 +72,99 @@ class MainDrawer extends StatelessWidget {
           // Main Menu
           ListTile(
             leading: Icon(Icons.dashboard),
-            title: Text('Dashboard Principal'),
+            title: Text(
+              isAdmin
+                  ? 'Panel de administración'
+                  : isDoctor
+                      ? 'Panel clínico'
+                      : 'Menú Principal',
+            ),
+            selected: selectedSectionId == '0',
             onTap: () {
-              Navigator.pop(context);
-              _navigateToDashboard(context, currentRole);
+              _handleNavigation(context, '0', () => _navigateToDashboard(context, currentRole));
             },
           ),
+  
+          Divider(),
 
-          // Diagnósticos
-          if (currentRole == 'patient' || currentRole == 'doctor') ...[
+          if (isAdmin) ...[
             _buildDrawerItem(
-              icon: Icons.upload_file,
-              title: 'Subir Imagen',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SubirImagen()),
-                );
-              },
-            ),
-            _buildDrawerItem(
-              icon: Icons.history,
-              title: 'Historial de Diagnósticos',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => HistorialDiagnosticos()),
-                );
-              },
-            ),
-          ],
-
-          if (currentRole == 'admin') ...[
-            _buildDrawerItem(
+              sectionId: '1',
               icon: Icons.supervised_user_circle,
               title: 'Gestión de Usuarios',
               onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
+                _handleNavigation(
                   context,
-                  MaterialPageRoute(builder: (_) => const DashboardAdmin()),
+                  '1',
+                  () => Navigator.pushReplacement(context, _animationRoute(const GestionUsuariosAdmin())),
                 );
               },
             ),
             _buildDrawerItem(
+              sectionId: '2',
               icon: Icons.calendar_month,
               title: 'Gestión de Citas',
               onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
+                _handleNavigation(
                   context,
-                  MaterialPageRoute(builder: (_) => const GestionCitasAdmin()),
+                  '2',
+                  () => Navigator.pushReplacement(context, _animationRoute(const GestionCitasAdmin())),
                 );
               },
             ),
+            _buildDrawerItem(
+              sectionId: '3',
+              icon: Icons.bar_chart,
+              title: 'Estadísticas detalladas',
+              onTap: () {
+                _handleNavigation(context, '3', () {});
+              },
+            ),
+            Divider(),           
           ],
+        
+          _buildDrawerItem(
+            sectionId: isPatient ? '1' : isDoctor ? '1' : '4',
+            icon: Icons.upload_file,
+            title: 'Subir imagen',
+            onTap: () {
+              _handleNavigation(
+                context,
+                isPatient ? '1' : isDoctor ? '1' : '4',
+                () => Navigator.pushReplacement(context, _animationRoute(const SubirImagen())),
+              );
+            },
+          ),
+          _buildDrawerItem(
+            sectionId: isPatient ? '2' : isDoctor ? '2' : '5',
+            icon: Icons.history,
+            title: 'Historial de diagnósticos',
+            onTap: () {
+              _handleNavigation(
+                context,
+                isPatient ? '2' : isDoctor ? '2' : '5',
+                () => Navigator.pushReplacement(context, _animationRoute(const HistorialDiagnosticos())),
+              );
+            },
+          ),          
 
           Divider(),
-
+              
           _buildDrawerItem(
+            sectionId: isPatient ? '3' : isDoctor ? '3' : '6',
             icon: Icons.settings,
-            title: 'Mi perfil y tema',
+            title: 'Mi perfil',
             onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
+              _handleNavigation(
                 context,
-                MaterialPageRoute(builder: (_) => const Settings()),
+                isPatient ? '3' : isDoctor ? '3' : '6',
+                () => Navigator.pushReplacement(context, _animationRoute(const Settings())),
               );
             },
           ),
 
+          Divider(), 
+             
           // Cerrar sesión
           _buildDrawerItem(
             icon: Icons.logout,
@@ -151,11 +180,44 @@ class MainDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerItem({
+    String? sectionId,
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
-    return ListTile(leading: Icon(icon), title: Text(title), onTap: onTap);
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: icon == Icons.logout ? Colors.red : null,
+      ),
+      title: Text(
+        title,
+        style: title == 'Cerrar Sesión'
+            ? const TextStyle(color: Colors.red)
+            : null,
+      ),
+      selected: sectionId != null && selectedSectionId == sectionId,
+      onTap: onTap,
+    );
+  }
+
+  void _handleNavigation(BuildContext context, String sectionId, VoidCallback fallback) {
+    Navigator.pop(context);
+    if (onSectionSelected != null) {
+      onSectionSelected!(sectionId);
+      return;
+    }
+
+    fallback();
+  }
+
+  Route<dynamic> _animationRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (_, animation, secondaryAnimation) => page,
+      //  transitionDuration: Duration.zero,
+      transitionDuration: Duration(microseconds: 300),
+      reverseTransitionDuration: Duration(microseconds: 300),
+    );
   }
 
   void _navigateToDashboard(BuildContext context, String role) {

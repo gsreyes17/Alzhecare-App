@@ -4,18 +4,17 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String local = 'http://localhost:8000';
-  static const String fisico = 'http://192.168.18.8:8000';
+  static const String local = 'http://192.168.18.8:8000';
   static const String produccion = 'https://backendalzheimer.onrender.com';
 
   static String get baseUrl => _currentUrl;
-  static String _currentUrl = fisico;
+  static String _currentUrl = local;
 
   static const String _urlKey = 'selectedBackendUrl';
 
   static Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    _currentUrl = prefs.getString(_urlKey) ?? fisico;
+    _currentUrl = prefs.getString(_urlKey) ?? local;
   }
 
   static Future<void> changeBaseUrl(String newUrl) async {
@@ -25,7 +24,7 @@ class ApiService {
   }
 
   static Map<String, String> getAvailableUrls() {
-    return {'Local': local, 'Físico': fisico, 'Producción': produccion};
+    return {'Local': local, 'Producción': produccion};
   }
 
   static String getCurrentUrlName() {

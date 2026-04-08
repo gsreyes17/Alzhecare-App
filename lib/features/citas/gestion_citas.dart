@@ -202,7 +202,7 @@ class _GestionCitasState extends State<GestionCitas> {
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<int?>(
-                    value: _medicoSeleccionado,
+                    initialValue: _medicoSeleccionado,
                     decoration: const InputDecoration(
                       labelText: 'Médico',
                       border: OutlineInputBorder(),
@@ -234,7 +234,7 @@ class _GestionCitasState extends State<GestionCitas> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _filtroEstado,
+                    initialValue: _filtroEstado,
                     decoration: const InputDecoration(
                       labelText: 'Estado',
                       border: OutlineInputBorder(),

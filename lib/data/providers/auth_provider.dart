@@ -25,7 +25,7 @@ class AuthProvider with ChangeNotifier {
     _loadAuthStatus();
   }
 
-  get pacienteId => null;
+  dynamic get pacienteId => null;
 
   Future<void> _loadAuthStatus() async {
     try {
@@ -41,7 +41,8 @@ class AuthProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      print('Error loading auth status: $e');
+      _errorMessage = 'Error cargando estado de autenticación: $e';
+      notifyListeners();
     }
   }
 

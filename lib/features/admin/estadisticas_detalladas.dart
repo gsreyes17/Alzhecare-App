@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import '../../data/providers/admin_provider.dart';
 
 class EstadisticasDetalladas extends StatefulWidget {
-  const EstadisticasDetalladas({super.key});
+  final bool showScaffold;
+
+  const EstadisticasDetalladas({super.key, this.showScaffold = true});
 
   @override
   State<EstadisticasDetalladas> createState() => _EstadisticasDetalladasState();
@@ -47,6 +49,47 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    final content = Consumer<AdminProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return TabBarView(
+          controller: _tabController,
+          children: [
+            _buildDiagnosticosTab(provider, colorScheme),
+            _buildHospitalesTab(provider, colorScheme),
+            _buildTendenciasTab(provider, colorScheme),
+            _buildActividadTab(provider, colorScheme),
+          ],
+        );
+      },
+    );
+
+    if (!widget.showScaffold) {
+      return Column(
+        children: [
+          Material(
+            color: colorScheme.primary,
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: Colors.white,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white70,
+              tabs: const [
+                Tab(icon: Icon(Icons.pie_chart), text: 'Diagnósticos'),
+                Tab(icon: Icon(Icons.local_hospital), text: 'Hospitales'),
+                Tab(icon: Icon(Icons.timeline), text: 'Tendencias'),
+                Tab(icon: Icon(Icons.history), text: 'Actividad'),
+              ],
+            ),
+          ),
+          Expanded(child: content),
+        ],
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Estadísticas Detalladas'),
@@ -65,23 +108,7 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
           ],
         ),
       ),
-      body: Consumer<AdminProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _buildDiagnosticosTab(provider, colorScheme),
-              _buildHospitalesTab(provider, colorScheme),
-              _buildTendenciasTab(provider, colorScheme),
-              _buildActividadTab(provider, colorScheme),
-            ],
-          );
-        },
-      ),
+      body: content,
     );
   }
 
@@ -185,7 +212,7 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
                       ],
                     ),
                   );
-                }).toList(),
+                })
               ],
             ),
           ),
@@ -336,7 +363,7 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -438,7 +465,7 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
                       ],
                     ),
                   );
-                }).toList(),
+                })
               ],
             ),
           ),
@@ -464,7 +491,7 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: color.withOpacity(0.2),
+              backgroundColor: color.withValues(alpha: 0.2),
               child: Icon(icon, color: color, size: 20),
             ),
             title: Text(actividad.descripcion ?? 'Sin descripción'),
@@ -472,9 +499,9 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: color.withOpacity(0.3)),
+                border: Border.all(color: color.withValues(alpha: 0.3)),
               ),
               child: Text(
                 actividad.tipo ?? 'N/A',
@@ -495,9 +522,9 @@ class _EstadisticasDetalladasState extends State<EstadisticasDetalladas>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

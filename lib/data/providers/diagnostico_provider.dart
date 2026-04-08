@@ -50,7 +50,6 @@ class DiagnosticoProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error cargando historial: $e';
-      print('Error en cargarHistorial: $e');
     } finally {
       _isLoadingHistorial = false;
       notifyListeners();
@@ -74,13 +73,11 @@ class DiagnosticoProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonResponse = Map<String, dynamic>.from(json.decode(response.body) as Map);
         _diagnosticoDetalle = DiagnosticoDetalle.fromJson(jsonResponse);
-        print('Detalle cargado para diagnóstico ID: $diagnosticoId');
       } else {
         throw Exception('Error obteniendo detalle: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error cargando detalle: $e';
-      print('Error en cargarDetalleDiagnostico: $e');
       rethrow;
     } finally {
       _isLoadingDetalle = false;

@@ -25,13 +25,11 @@ class MedicoProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _misPacientes = json.decode(response.body);
-        print('Pacientes cargados: ${_misPacientes.length}');
       } else {
         throw Exception('Error cargando pacientes: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error: $e';
-      print('Error en cargarMisPacientes: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -55,10 +53,15 @@ class MedicoProvider with ChangeNotifier {
         'per_page': perPage.toString(),
       };
 
-      if (pacienteId != null)
+      if (pacienteId != null) {
         queryParams['paciente_id'] = pacienteId.toString();
-      if (fechaDesde != null) queryParams['fecha_desde'] = fechaDesde;
-      if (fechaHasta != null) queryParams['fecha_hasta'] = fechaHasta;
+      }
+      if (fechaDesde != null) {
+        queryParams['fecha_desde'] = fechaDesde;
+      }
+      if (fechaHasta != null) {
+        queryParams['fecha_hasta'] = fechaHasta;
+      }
 
       final response = await ApiService.get(
         '/api/medico/historial-pacientes',
@@ -68,15 +71,11 @@ class MedicoProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _historialPacientes = data['diagnosticos'] ?? [];
-        print(
-          'Historial de pacientes cargado: ${_historialPacientes.length} registros',
-        );
       } else {
         throw Exception('Error cargando historial: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error: $e';
-      print('Error en cargarHistorialPacientes: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -93,13 +92,11 @@ class MedicoProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _perfilMedico = json.decode(response.body);
-        print('Perfil médico cargado');
       } else {
         throw Exception('Error cargando perfil: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error: $e';
-      print('Error en cargarPerfilMedico: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

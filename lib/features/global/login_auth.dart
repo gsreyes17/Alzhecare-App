@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/services/api_service.dart';
 import '../../data/providers/auth_provider.dart';
-import '../paciente/dashboard_paciente.dart';
-import '../doctor/dashboard_doctor.dart';
-import '../admin/dashboard_admin.dart';
+import '../dashboards/dashboard_paciente.dart';
+import '../dashboards/dashboard_doctor.dart';
+import '../dashboards/dashboard_admin.dart';
 import 'register_auth.dart';
 
 class Login extends StatefulWidget {
@@ -17,7 +17,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _currentBackend = 'Cargando...';
+  String _currentServer = 'Cargando...';
 
   @override
   void initState() {
@@ -27,13 +27,13 @@ class _LoginState extends State<Login> {
 
   void _loadCurrentBackend() {
     setState(() {
-      _currentBackend = ApiService.getCurrentUrlName();
+      _currentServer = ApiService.getCurrentUrlName();
     });
   }
 
-  void _handleLogin(BuildContext context) async {
+  void _handleLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
+    
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Por favor completa todos los campos')),
@@ -45,7 +45,8 @@ class _LoginState extends State<Login> {
       _usernameController.text.trim(),
       _passwordController.text,
     );
-
+    
+    if (!mounted) return;
     if (success) {
       _navigateToDashboard(context, authProvider.userRole);
     } else {
@@ -78,7 +79,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  void _showBackendSelector(BuildContext context) {
+  void _showServerSideSelector(BuildContext context) {
     final Map<String, String> availableUrls = ApiService.getAvailableUrls();
 
     showDialog(
@@ -122,7 +123,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     onTap: () {
-                      _changeBackendUrl(entry.value, context);
+                      _changeServerSideUrl(entry.value);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -141,15 +142,16 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<void> _changeBackendUrl(String newUrl, BuildContext context) async {
+  Future<void> _changeServerSideUrl(String newUrl) async {
     await ApiService.changeBaseUrl(newUrl);
+    if (!mounted) return;
     setState(() {
-      _currentBackend = ApiService.getCurrentUrlName();
+      _currentServer = ApiService.getCurrentUrlName();
     });
-
+  
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Backend cambiado a: $_currentBackend'),
+        content: Text('Backend cambiado a: $_currentServer'),
         duration: Duration(seconds: 2),
         backgroundColor: Colors.green,
       ),
@@ -173,10 +175,10 @@ class _LoginState extends State<Login> {
                   child: Container(
                     margin: EdgeInsets.only(bottom: 20),
                     child: ElevatedButton.icon(
-                      onPressed: () => _showBackendSelector(context),
+                      onPressed: () => _showServerSideSelector(context),
                       icon: Icon(Icons.settings, size: 16),
                       label: Text(
-                        _currentBackend,
+                        _currentServer,
                         style: TextStyle(fontSize: 12),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -198,7 +200,7 @@ class _LoginState extends State<Login> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: Image.asset(
-                    'images/icon.png',
+                    'assets/images/icon.png',
                     width: 120,
                     height: 120,
                   ),
@@ -248,7 +250,7 @@ class _LoginState extends State<Login> {
                   CircularProgressIndicator()
                 else
                   ElevatedButton(
-                    onPressed: () => _handleLogin(context),
+                    onPressed: () => _handleLogin(),
                     child: Text("Iniciar Sesión"),
                   ),
 
