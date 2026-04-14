@@ -7,25 +7,17 @@ environment:
   sdk: ^3.11.4
 
 dependencies:
+  equatable: ^2.0.8
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
   cupertino_icons: ^1.0.9
-  provider: ^6.1.5+1
-  shared_preferences: ^2.5.5
-  image_picker: ^1.2.1
-  http: ^1.6.0
-  intl: ^0.20.2
-
-  cross_file: ^0.3.5
-  cached_network_image: ^3.4.1
-
-  flutter_launcher_icons: ^0.14.4
+  flutter_bloc: ^9.1.1
   flutter_native_splash: ^2.4.7
-
-  flutter_form_builder: ^10.2.0
-  form_builder_validators: ^11.3.0
+  http: ^1.6.0
+  image_picker: ^1.2.1
+  intl: ^0.20.2
+  provider: ^6.1.5
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
@@ -45,14 +37,20 @@ flutter_launcher_icons:
   adaptive_icon_background: "#2563EB"
   adaptive_icon_foreground: "assets/images/icon.png"
 
+
 flutter_native_splash:
-  image: "assets/images/splash.png"
-  color: "#ffffff"
-  color_dark: "#ffffff"
-  image_dark: "assets/images/splash.png"
+  color: "#F4F7FB"
+  color_dark: "#10263D"
+  image: assets/images/icon_splash.png
+  image_dark: assets/images/icon_splash.png
 
   android_12:
-    image: "assets/images/splash.png"
-    icon_background_color: "#ffffff"
-    image_dark: "assets/images/splash.png"
-    icon_background_color_dark: "#ffffff"
+    color: "#F4F7FB"
+    color_dark: "#10263D"
+    image: assets/images/icon_splash.png
+    image_dark: assets/images/icon_splash.png
+
+  web: true
+  android: true
+  ios: true
+  fullscreen: false

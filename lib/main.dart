@@ -1,87 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-import 'core/services/api_service.dart';
+import 'app/alzhecare_app.dart';
+import 'core/network/api_client.dart';
+import 'core/storage/session_storage.dart';
+import 'core/theme/theme_provider.dart';
+import 'features/admin/data/admin_appointments_repository.dart';
+import 'features/admin/data/admin_users_repository.dart';
+import 'features/auth/data/auth_repository.dart';
+import 'features/auth/presentation/auth_cubit.dart';
+import 'features/doctor/data/doctor_repository.dart';
+import 'features/patient/data/diagnosis_repository.dart';
+import 'features/patient/data/patient_notifications_repository.dart';
+import 'features/patient/data/patient_requests_repository.dart';
+import 'features/patient/presentation/diagnosis_cubit.dart';
 
-import 'data/providers/_index_.dart';
-
-import 'features/global/login_auth.dart';
-
-import 'core/widgets/app_shell.dart';
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await ApiService.initialize();
-  runApp(MyApp());
+void main() {
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => DiagnosticoProvider()),
-        ChangeNotifierProvider(create: (_) => AdminProvider()),
-        ChangeNotifierProvider(create: (_) => CoordinacionProvider()),
-      ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return MaterialApp(
-            title: 'AlzheCare',
-            theme: themeProvider.currentTheme,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale('es', 'ES'),
-              Locale('en', 'US'),
-            ],
-            locale: const Locale('es', 'ES'),
-            home: AppInitializer(),
-          );
-        },
+    final sessionStorage = SessionStorage();
+    final apiClient = ApiClient(sessionStorage: sessionStorage);
+
+    return ChangeNotifierProvider<ThemeProvider>(
+      create: (_) => ThemeProvider()..load(),
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider.value(value: sessionStorage),
+          RepositoryProvider.value(value: apiClient),
+          RepositoryProvider(
+            create: (_) => AuthRepository(
+              apiClient: apiClient,
+              sessionStorage: sessionStorage,
+            ),
+          ),
+          RepositoryProvider(
+            create: (_) => DiagnosisRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => DoctorRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => PatientRequestsRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => AdminAppointmentsRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => PatientNotificationsRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => AdminUsersRepository(apiClient: apiClient),
+          ),
+        ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+                  AuthCubit(authRepository: context.read<AuthRepository>())
+                    ..bootstrap(),
+            ),
+            BlocProvider(
+              create: (context) => DiagnosisCubit(
+                diagnosisRepository: context.read<DiagnosisRepository>(),
+              ),
+            ),
+          ],
+          child: const AlzhecareApp(),
+        ),
       ),
     );
-  }
-}
-class AppInitializer extends StatelessWidget {
-  const AppInitializer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    if (authProvider.isLoading) {
-      return Scaffold(
-        backgroundColor: themeProvider.currentTheme.scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return authProvider.isLoggedIn
-        ? _buildDashboardByRole(authProvider.userRole)
-        : Login();
-  }
-
-  Widget _buildDashboardByRole(String role) {
-    switch (role) {
-      case 'patient':
-        return const PatientShell();
-      case 'doctor':
-        return const DoctorShell();
-      case 'admin':
-        return const AdminShell();
-      default:
-        return const PatientShell();
-    }
   }
 }
