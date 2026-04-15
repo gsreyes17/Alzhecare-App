@@ -13,6 +13,7 @@ import 'features/auth/data/auth_repository.dart';
 import 'features/auth/presentation/auth_cubit.dart';
 import 'features/doctor/data/doctor_repository.dart';
 import 'features/patient/data/diagnosis_repository.dart';
+import 'features/patient/data/patient_appointments_repository.dart';
 import 'features/patient/data/patient_notifications_repository.dart';
 import 'features/patient/data/patient_requests_repository.dart';
 import 'features/patient/presentation/diagnosis_cubit.dart';
@@ -51,6 +52,9 @@ class MainApp extends StatelessWidget {
           ),
           RepositoryProvider(
             create: (_) => PatientRequestsRepository(apiClient: apiClient),
+          ),
+          RepositoryProvider(
+            create: (_) => PatientAppointmentsRepository(apiClient: apiClient),
           ),
           RepositoryProvider(
             create: (_) => AdminAppointmentsRepository(apiClient: apiClient),

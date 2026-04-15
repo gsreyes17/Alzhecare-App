@@ -13,6 +13,7 @@ import '../../auth/presentation/auth_cubit.dart';
 import '../../doctor/presentation/doctor_appointments_page.dart';
 import '../../doctor/presentation/doctor_patients_page.dart';
 import '../../patient/presentation/patient_notifications_page.dart';
+import '../../patient/presentation/patient_appointments_page.dart';
 import '../../patient/presentation/patient_requests_page.dart';
 import '../../profile/presentation/editable_profile_page.dart';
 import '../../patient/presentation/diagnosis_cubit.dart';
@@ -107,6 +108,11 @@ class _DashboardShellState extends State<DashboardShell> {
           builder: (_) => const PatientNotificationsPage(),
         ),
         _DrawerDestination(
+          title: 'Citas',
+          icon: Icons.event_note_outlined,
+          builder: (_) => const PatientAppointmentsPage(),
+        ),
+        _DrawerDestination(
           title: 'Perfil',
           icon: Icons.person_outline,
           builder: (_) => PatientProfilePage(user: widget.session.user),
@@ -137,6 +143,11 @@ class _DashboardShellState extends State<DashboardShell> {
           title: 'Citas',
           icon: Icons.event_available_outlined,
           builder: (_) => const DoctorAppointmentsPage(),
+        ),
+        _DrawerDestination(
+          title: 'Notificaciones',
+          icon: Icons.notifications_none_outlined,
+          builder: (_) => const PatientNotificationsPage(),
         ),
         _DrawerDestination(
           title: 'Perfil',
@@ -175,8 +186,8 @@ class _DashboardShellState extends State<DashboardShell> {
           icon: Icons.manage_accounts_outlined,
           builder: (_) => const FeaturePlaceholderPage(
             title: 'Administración de usuarios',
-            description: 'Esta sección estará disponible en la siguiente fase.',
-            endpoints: ['/api/admin/users', '/api/admin/users/{user_id}'],
+            description:
+                'Gestiona cuentas de la plataforma desde un entorno centralizado.',
           ),
         ),
         _DrawerDestination(
@@ -749,6 +760,8 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -758,10 +771,10 @@ class _QuickActionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF4F8),
+                color: colors.primaryContainer,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: const Color(0xFF1A6F8F)),
+              child: Icon(icon, color: colors.onPrimaryContainer),
             ),
             const SizedBox(height: 18),
             Text(
@@ -771,7 +784,7 @@ class _QuickActionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: const TextStyle(color: Color(0xFF617084), height: 1.6),
+              style: TextStyle(color: colors.onSurfaceVariant, height: 1.6),
             ),
           ],
         ),

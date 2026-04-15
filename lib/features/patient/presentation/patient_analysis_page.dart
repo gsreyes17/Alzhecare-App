@@ -72,7 +72,7 @@ class _PatientAnalysisPageState extends State<PatientAnalysisPage> {
             const _SectionHeader(
               title: 'Análisis de imagen',
               subtitle:
-                  'Selecciona una imagen, envíala al backend y revisa la predicción generada.',
+              'Selecciona una imagen, procesala y revisa la prediccion generada.',
             ),
             const SizedBox(height: 20),
             Card(
@@ -132,7 +132,7 @@ class _PatientAnalysisPageState extends State<PatientAnalysisPage> {
                         height: 240,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF4F7FB),
+                          color: Theme.of(context).colorScheme.surfaceContainer,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Center(
@@ -307,7 +307,10 @@ class _SectionHeader extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           subtitle,
-          style: const TextStyle(color: Color(0xFF617084), height: 1.6),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            height: 1.6,
+          ),
         ),
       ],
     );
@@ -330,7 +333,9 @@ class _AnalysisResultRow extends StatelessWidget {
             width: 110,
             child: Text(
               label,
-              style: const TextStyle(color: Color(0xFF617084)),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
           Expanded(

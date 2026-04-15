@@ -41,15 +41,11 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#F4F7FB"
   color_dark: "#10263D"
-  image: assets/images/icon_splash.png
-  image_dark: assets/images/icon_splash.png
 
   android_12:
     color: "#F4F7FB"
     color_dark: "#10263D"
-    image: assets/images/icon_splash.png
-    image_dark: assets/images/icon_splash.png
-
+    
   web: true
   android: true
   ios: true

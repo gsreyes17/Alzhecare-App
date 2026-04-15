@@ -5,12 +5,10 @@ class FeaturePlaceholderPage extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    required this.endpoints,
   });
 
   final String title;
   final String description;
-  final List<String> endpoints;
 
   @override
   Widget build(BuildContext context) {
@@ -34,30 +32,29 @@ class FeaturePlaceholderPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Integración pendiente',
+                  'Proximamente',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Estamos trabajando en esta sección. Estas rutas se integrarán en la siguiente fase:',
+                  'Esta funcionalidad esta en preparacion y se habilitara en una proxima actualizacion.',
                   style: TextStyle(color: Color(0xFF617084), height: 1.5),
                 ),
-                const SizedBox(height: 10),
-                ...endpoints.map(
-                  (endpoint) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.link,
-                          size: 18,
-                          color: Color(0xFF1A6F8F),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(endpoint)),
-                      ],
+                const SizedBox(height: 16),
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.hourglass_top_rounded,
+                      size: 18,
+                      color: Color(0xFF1A6F8F),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Gracias por tu paciencia. Muy pronto podras gestionar esta seccion desde la app.',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

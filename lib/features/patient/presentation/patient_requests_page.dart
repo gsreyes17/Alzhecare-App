@@ -65,6 +65,8 @@ class _PatientRequestsPageState extends State<PatientRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return RefreshIndicator(
       onRefresh: _loadRequests,
       child: ListView(
@@ -75,9 +77,9 @@ class _PatientRequestsPageState extends State<PatientRequestsPage> {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Acepta o deniega las solicitudes de doctores.',
-            style: TextStyle(color: Color(0xFF617084)),
+            style: TextStyle(color: colors.onSurfaceVariant),
           ),
           const SizedBox(height: 16),
           if (_loading)
@@ -108,7 +110,7 @@ class _PatientRequestsPageState extends State<PatientRequestsPage> {
                       const SizedBox(height: 4),
                       Text(
                         'Solicitud enviada el ${DateFormat('dd/MM/yyyy HH:mm').format(request.createdAt)}',
-                        style: const TextStyle(color: Color(0xFF617084)),
+                        style: TextStyle(color: colors.onSurfaceVariant),
                       ),
                       const SizedBox(height: 12),
                       Row(

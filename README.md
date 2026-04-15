@@ -48,3 +48,8 @@ android/app/src/main/AndroidManifest.xml
   <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="Alzhecare CNN"
+
+
+
+  image: assets/images/icon_splash.png
+  image_dark: assets/images/icon_splash.png

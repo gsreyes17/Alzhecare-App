@@ -29,11 +29,18 @@ class _AuthPageState extends State<AuthPage>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0F1B2A), Color(0xFF1A6F8F), Color(0xFFF4F7FB)],
+            colors: [
+              isDark ? const Color(0xFF08131A) : const Color(0xFFE8F5F8),
+              isDark ? const Color(0xFF174957) : const Color(0xFF74C8D6),
+              isDark ? const Color(0xFF10252E) : const Color(0xFFF4FBFC),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: [0, 0.38, 1],
@@ -49,7 +56,11 @@ class _AuthPageState extends State<AuthPage>
                   builder: (context, constraints) {
                     final authCard = SizedBox(
                       width: 460,
-                      child: _AuthCard(tabController: _tabController),
+                      child: _AuthCard(
+                        tabController: _tabController,
+                        colorScheme: colorScheme,
+                        isDark: isDark,
+                      ),
                     );
                     return ListView(
                       children: [
@@ -69,20 +80,29 @@ class _AuthPageState extends State<AuthPage>
 }
 
 class _AuthCard extends StatelessWidget {
-  const _AuthCard({required this.tabController});
+  const _AuthCard({
+    required this.tabController,
+    required this.colorScheme,
+    required this.isDark,
+  });
 
   final TabController tabController;
+  final ColorScheme colorScheme;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface.withValues(alpha: isDark ? 0.94 : 0.98),
         borderRadius: BorderRadius.circular(32),
-        boxShadow: const [
+        border: Border.all(
+          color: isDark ? const Color(0xFF28424B) : const Color(0xFFD2E8ED),
+        ),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x22000000),
+            color: Colors.black.withValues(alpha: isDark ? 0.32 : 0.12),
             blurRadius: 40,
             offset: Offset(0, 18),
           ),
@@ -93,39 +113,42 @@ class _AuthCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            'Bienvenido',
+            'Bienvenido a Alzhecare',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF10263D),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Ingresa con tu rol o crea una cuenta de paciente.',
-            style: TextStyle(color: Color(0xFF617084)),
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 20),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF4F7FB),
+              color: isDark
+                  ? const Color(0xFF152C36)
+                  : const Color(0xFFEAF5F8),
               borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF2A4651)
+                    : const Color(0xFFD4E9EE),
+              ),
             ),
             child: TabBar(
               controller: tabController,
-              labelColor: const Color(0xFF10263D),
-              unselectedLabelColor: const Color(0xFF617084),
-              indicator: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
+              dividerColor: Colors.transparent,
+              labelColor: colorScheme.onPrimaryContainer,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
               tabs: const [
                 Tab(text: 'Login'),
                 Tab(text: 'Registro'),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 5),
           SizedBox(
             height: 580,
             child: TabBarView(
@@ -176,6 +199,7 @@ class _LoginFormState extends State<_LoginForm> {
           key: _formKey,
           child: Column(
             children: [
+              const SizedBox(height: 15),
               _TextField(
                 controller: _usernameController,
                 label: 'Usuario',
@@ -372,12 +396,6 @@ class _TextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
-        filled: true,
-        fillColor: const Color(0xFFF4F7FB),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
       ),
     );
   }
@@ -388,9 +406,13 @@ class _RoleHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'El registro está reservado para pacientes. Administradores y doctores ingresan con credenciales creadas desde el backend.',
-      style: TextStyle(color: Color(0xFF617084), fontSize: 12.5, height: 1.5),
+    return Text(
+      'El registro esta reservado para pacientes. Administradores y doctores ingresan con credenciales institucionales.',
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontSize: 12.5,
+        height: 1.5,
+      ),
       textAlign: TextAlign.center,
     );
   }
